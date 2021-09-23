@@ -105,6 +105,11 @@ class User implements UserInterface
     private ?string $resetToken;
 
     /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $resetTokenAt;
+
+    /**
      * @ORM\Column(type="json")
      */
     private $role = [];
@@ -196,6 +201,18 @@ class User implements UserInterface
     public function setResetToken(?string $resetToken): self
     {
         $this->resetToken = $resetToken;
+
+        return $this;
+    }
+
+    public function getResetTokenAt(): ?\DateTimeInterface
+    {
+        return $this->resetTokenAt;
+    }
+
+    public function setResetTokenAt(?\DateTimeInterface $resetTokenAt): self
+    {
+        $this->resetTokenAt = $resetTokenAt;
 
         return $this;
     }
