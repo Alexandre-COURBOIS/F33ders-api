@@ -44,6 +44,17 @@ class User implements UserInterface
      * @ORM\Column(type="json")
      */
     private $role = [];
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private ?bool $isActive;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
     /**
      * @ORM\Column(type="datetime_immutable")
      */
@@ -54,10 +65,6 @@ class User implements UserInterface
      */
     private ?\DateTimeImmutable $updatedAt;
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
 
     public function getEmail(): ?string
     {
@@ -117,6 +124,18 @@ class User implements UserInterface
     public function setRoles(array $roles): self
     {
         $this->role = $roles;
+
+        return $this;
+    }
+
+    public function getIsActive(): ?bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): self
+    {
+        $this->isActive = $isActive;
 
         return $this;
     }
