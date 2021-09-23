@@ -23,6 +23,11 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="string", length=255)
      */
+    private ?string $username;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
     private ?string $email;
 
     /**
@@ -182,5 +187,12 @@ class User implements UserInterface
     public function __call($name, $arguments)
     {
         // TODO: Implement @method string getUserIdentifier()
+    }
+
+    public function setUsername(string $username): self
+    {
+        $this->username = $username;
+
+        return $this;
     }
 }
