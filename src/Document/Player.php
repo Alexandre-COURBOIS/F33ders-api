@@ -23,6 +23,6 @@ class Player
     /**
      * @MongoDB\String 
      */
-    private $json;
+    private $userHistory;
 
 }
