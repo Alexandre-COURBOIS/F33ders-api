@@ -35,4 +35,23 @@ class UserAccountController extends AbstractController
             return new JsonResponse("Aucune donnée renseignées. Renouvelez votre demande.", Response::HTTP_BAD_REQUEST);
         }
     }
+
+    /**
+     * @Route("/api/get_user", name="api_get_user", methods={"GET"})
+     * @param UserRepository $userRepository
+     * @param Request $request
+     * @return Response
+     */
+    public function getUser(UserRepository $userRepository, Request $request): Response
+    {
+        $data = json_decode($request->getContent(), true);
+
+        $user = $userRepository->findOneBy(['email' => $data['email']]);
+
+        if ($user) {
+            return new JsonResponse($user, Response::HTTP_OK);
+        } else {
+            return new JsonResponse("Aucune informations", Response::HTTP_BAD_REQUEST);
+        }
+    }
 }
