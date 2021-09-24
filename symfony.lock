@@ -73,6 +73,23 @@
     "doctrine/migrations": {
         "version": "3.2.1"
     },
+    "doctrine/mongodb-odm": {
+        "version": "2.2.2"
+    },
+    "doctrine/mongodb-odm-bundle": {
+        "version": "3.3",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "3.3",
+            "ref": "1fd8598bf42227a1c8905edd32f640e4c5d15eff"
+        },
+        "files": [
+            "./config/packages/doctrine_mongodb.yaml",
+            "./config/packages/prod/doctrine_mongodb.yaml",
+            "./src/Document/.gitignore"
+        ]
+    },
     "doctrine/orm": {
         "version": "2.9.5"
     },
@@ -103,6 +120,9 @@
             "./config/packages/google_recaptcha.yaml"
         ]
     },
+    "jean85/pretty-package-versions": {
+        "version": "1.6.0"
+    },
     "laminas/laminas-code": {
         "version": "4.4.2"
     },
@@ -123,6 +143,9 @@
         "files": [
             "./config/packages/lexik_jwt_authentication.yaml"
         ]
+    },
+    "mongodb/mongodb": {
+        "version": "1.8.0"
     },
     "namshi/jose": {
         "version": "7.2.3"
