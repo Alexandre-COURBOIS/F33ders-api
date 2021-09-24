@@ -4,11 +4,14 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\UserRegisterType;
+use Doctrine\Bundle\MongoDBBundle\ManagerConfigurator;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -21,11 +24,12 @@ class RegisterController extends AbstractController
      * @param ValidatorInterface $validator
      * @param EntityManagerInterface $em
      * @param UserPasswordEncoderInterface $passwordEncoder
+     * @param MailerInterface $mailer
      * @return JsonResponse
-     *
      * Methode permettant l'inscription de nouveaux utilisateurs
+     * @throws \Symfony\Component\Mailer\Exception\TransportExceptionInterface
      */
-    public function userRegister(Request $request, ValidatorInterface $validator, EntityManagerInterface $em, UserPasswordEncoderInterface $passwordEncoder): JsonResponse
+    public function userRegister(Request $request, ValidatorInterface $validator, EntityManagerInterface $em, UserPasswordEncoderInterface $passwordEncoder, MailerInterface $mailer): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
 
@@ -51,7 +55,18 @@ class RegisterController extends AbstractController
             $em->persist($user);
             $em->flush();
 
-            return new JsonResponse('User has been created successfully', Response::HTTP_CREATED);
+            $email = (new TemplatedEmail())
+                ->from('support.web@f33ders.com')
+                ->to($user->getEmail())
+                ->subject('Activation de votre compte F33ders !')
+                ->htmlTemplate('user_account/activating_account.html.twig')
+                ->context([
+                    'user' => $user,
+                ]);
+
+            $mailer->send($email);
+
+            return new JsonResponse('Merci d\'activer votre compte via l\'email qui vient de vous être envoyé', Response::HTTP_CREATED);
         } else {
             return new JsonResponse("There is no informations to treat", Response::HTTP_BAD_REQUEST);
         }
