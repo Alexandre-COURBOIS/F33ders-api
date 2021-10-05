@@ -11,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -27,7 +28,7 @@ class RegisterController extends AbstractController
      * @param MailerInterface $mailer
      * @return JsonResponse
      * Methode permettant l'inscription de nouveaux utilisateurs
-     * @throws \Symfony\Component\Mailer\Exception\TransportExceptionInterface
+     * @throws TransportExceptionInterface
      */
     public function userRegister(Request $request, ValidatorInterface $validator, EntityManagerInterface $em, UserPasswordEncoderInterface $passwordEncoder, MailerInterface $mailer): JsonResponse
     {
@@ -66,7 +67,7 @@ class RegisterController extends AbstractController
 
             $mailer->send($email);
 
-            return new JsonResponse('Merci d\'activer votre compte via l\'email qui vient de vous être envoyé', Response::HTTP_CREATED);
+            return new JsonResponse('Vous êtes bien inscrit ! Merci d\'activer votre compte via l\'email qui vient de vous être envoyé afin de pouvoir vous connecter', Response::HTTP_CREATED);
         } else {
             return new JsonResponse("There is no informations to treat", Response::HTTP_BAD_REQUEST);
         }

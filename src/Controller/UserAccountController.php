@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Repository\UserRepository;
+use App\Service\SerializerService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -11,6 +12,14 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class UserAccountController extends AbstractController
 {
+
+    private SerializerService $serializer;
+
+    public function __construct(SerializerService $serializerService)
+    {
+        $this->serializer = $serializerService;
+    }
+
     /**
      * @Route("/account_activation", name="account_activation")
      */
@@ -38,18 +47,14 @@ class UserAccountController extends AbstractController
 
     /**
      * @Route("/api/get_user", name="api_get_user", methods={"GET"})
-     * @param UserRepository $userRepository
-     * @param Request $request
      * @return Response
      */
-    public function getUser(UserRepository $userRepository, Request $request): Response
+    public function getUserInformations(): Response
     {
-        $data = json_decode($request->getContent(), true);
-
-        $user = $userRepository->findOneBy(['email' => $data['email']]);
+        $user = $this->getUser();
 
         if ($user) {
-            return new JsonResponse($user, Response::HTTP_OK);
+            return JsonResponse::fromJsonString($this->serializer->SimpleSerializer($user, 'json'));
         } else {
             return new JsonResponse("Aucune informations", Response::HTTP_BAD_REQUEST);
         }

@@ -26,8 +26,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     message="Ce nom d'utilisateur est déjà utilisé.",
  *     groups={"Register"},
  * )
- *
- * @method string getUserIdentifier()
  */
 class User implements UserInterface
 {
