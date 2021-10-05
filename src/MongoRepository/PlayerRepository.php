@@ -2,7 +2,9 @@
 
 namespace App\MongoRepository;
 
-class PlayerRepository
+use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
+
+class PlayerRepository extends DocumentRepository
 {
  
 }
