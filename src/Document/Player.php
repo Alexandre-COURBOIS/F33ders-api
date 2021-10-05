@@ -17,7 +17,7 @@ class Player
     private int $id;
     
     /**
-     * @MongoDB\String
+     * @MongoDB\Field(type="string")
      */
     private string $username;
     
