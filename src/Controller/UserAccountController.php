@@ -54,7 +54,7 @@ class UserAccountController extends AbstractController
         $user = $this->getUser();
 
         if ($user) {
-            return JsonResponse::fromJsonString($this->serializer->SimpleSerializer($user, 'json'));
+            return JsonResponse::fromJsonString($this->serializer->SimpleSerializerUser($user, 'json'));
         } else {
             return new JsonResponse("Aucune informations", Response::HTTP_BAD_REQUEST);
         }
