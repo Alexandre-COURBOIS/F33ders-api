@@ -2,11 +2,10 @@
 
 namespace App\Document;
 
-use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
 /**
- * @MongoDB\Document(collection="player", repositoryClass="App\MongoRepository\PlayerRepository")
+ * @MongoDB\Document(collection="players", repositoryClass="App\MongoRepository\PlayerRepository")
  * @MongoDB\HasLifecycleCallbacks
  */
 class Player
@@ -14,25 +13,25 @@ class Player
     /**
      * @MongoDB\Id
      */
-    private int $id;
-    
-    /**
-     * @MongoDB\String
-     */
-    private string $username;
-    
-    /**
-     * @MongoDB\Object
-     */
-    private Object $userHistory;
+    private $id;
 
     /**
-     * @MongoDB\Date
+     * @MongoDB\Field(type="string")
+     */
+    private string $username;
+
+    /**
+     * @MongoDB\Field(type="collection")
+     */
+    private $userHistory;
+
+    /**
+     * @MongoDB\Field(type="date")
      */
     private $createdAt;
 
     /**
-     * @MongoDB\Date
+     * @MongoDB\Field(type="date")
      */
     private $updatedAt;
 
@@ -41,7 +40,7 @@ class Player
      */
     public function onPrePersist()
     {
-        $this->createdAt = new DateTime();
+        $this->createdAt = time();
     }
 
     /**
@@ -49,21 +48,18 @@ class Player
      */
     public function onPreUpdate()
     {
-        $this->updatedAt = new DateTime();
+//        $date = new DateTime();
+        $this->updatedAt = time();
     }
 
-    /**
-     * @return int
-     */
-    public function getId(): int
+
+    public function getId()
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     */
-    public function setId(int $id): void
+
+    public function setId($id): void
     {
         $this->id = $id;
     }
@@ -83,19 +79,14 @@ class Player
     {
         $this->username = $username;
     }
-
-    /**
-     * @return Object
-     */
-    public function getUserHistory(): object
+    
+    public function getUserHistory()
     {
         return $this->userHistory;
     }
 
-    /**
-     * @param Object $userHistory
-     */
-    public function setUserHistory(object $userHistory): void
+   
+    public function setUserHistory($userHistory): void
     {
         $this->userHistory = $userHistory;
     }
