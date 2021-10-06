@@ -26,18 +26,11 @@ class UserDataController extends AbstractController
     {
         $response = $this->riotApiService->getUserApi($username);
         
-//        dd($response);
-//        $content = $response->toArray();
-        $toto = new \stdClass();
         $player = new Player();
-//        $player->setId("507f1f77bcf86cd799439011");
         $player->setUsername($username);
-//        $player->setUserHistory("toto");
-//        dd(json_encode($response));
+        $player->setUserHistory([$response]);
         $dm->persist($player);
         $dm->flush();
-        
-        
         
     }
 }

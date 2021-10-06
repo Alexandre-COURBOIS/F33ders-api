@@ -14,16 +14,16 @@ class Player
      * @MongoDB\Id
      */
     private $id;
-    
+
     /**
      * @MongoDB\Field(type="string")
      */
     private string $username;
-    
-//    /**
-//     * @MongoDB\Field(type="string")
-//     */
-//    private string $userHistory;
+
+    /**
+     * @MongoDB\Field(type="collection")
+     */
+    private $userHistory;
 
     /**
      * @MongoDB\Field(type="date")
@@ -52,13 +52,13 @@ class Player
         $this->updatedAt = time();
     }
 
-    
+
     public function getId()
     {
         return $this->id;
     }
 
-    
+
     public function setId($id): void
     {
         $this->id = $id;
@@ -79,22 +79,17 @@ class Player
     {
         $this->username = $username;
     }
+    
+    public function getUserHistory()
+    {
+        return $this->userHistory;
+    }
 
-//    /**
-//     * @return string
-//     */
-//    public function getUserHistory(): string
-//    {
-//        return $this->userHistory;
-//    }
-
-    /**
-//     * @param string $userHistory
-//     */
-//    public function setUserHistory(string $userHistory): void
-//    {
-//        $this->userHistory = $userHistory;
-//    }
+   
+    public function setUserHistory($userHistory): void
+    {
+        $this->userHistory = $userHistory;
+    }
 
     /**
      * @return mixed
