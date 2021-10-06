@@ -25,13 +25,15 @@ class UserDataController extends AbstractController
     public function insertHistory(string $username, DocumentManager $dm)
     {
         $response = $this->riotApiService->getUserApi($username);
-        $content = $response->getContent();
         
+//        dd($response);
+//        $content = $response->toArray();
+        $toto = new \stdClass();
         $player = new Player();
-        $player->setId(1);
+//        $player->setId("507f1f77bcf86cd799439011");
         $player->setUsername($username);
-        $player->setUserHistory($content);
-        
+//        $player->setUserHistory("toto");
+//        dd(json_encode($response));
         $dm->persist($player);
         $dm->flush();
         
