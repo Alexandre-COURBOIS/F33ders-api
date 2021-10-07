@@ -53,7 +53,6 @@ class UserDataController extends AbstractController
         } else {
             return new JsonResponse("Username unavailable", Response::HTTP_BAD_REQUEST);
         }
-
     }
 
     /**
