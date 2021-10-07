@@ -9,6 +9,9 @@ class RiotApiService
 
     private HttpClientInterface $httpClient;
 
+    private string $urlDataDragon = 'http://ddragon.leagueoflegends.com';
+    private string $getAllChampions = '/cdn/9.3.1/data/en_US/champion.json';
+
     public function __construct(HttpClientInterface $client)
     {
         $this->httpClient = $client;
@@ -78,6 +81,20 @@ class RiotApiService
         return $champions;
     }
 
+    public function getChampions(): array
+    {
+        $response = $this->httpClient->request(
+            'GET',
+            $this->urlDataDragon . $this->getAllChampions
+        );
+
+        $content = $response->getContent();
+
+        $content = $response->toArray();
+
+        return $content;
+    }
+
     public function getOneChampionById($id)
     {
         $response = $this->httpClient->request(
@@ -104,5 +121,31 @@ class RiotApiService
             },
             array_count_values($array)
         );
+    }
+
+    public function getStats($foreachEntry, $param = null, $param2 = null, $param3 = null, $param4 = null, $param5 = null): array
+    {
+
+        $outPutTable = [];
+
+        foreach ($foreachEntry as $output) {
+            $outPutTable[$param2][] = $output[$param][$param2];
+            $outPutTable[$param3][] = $output[$param][$param3];
+            $outPutTable[$param4][] = $output[$param][$param4];
+            $outPutTable[$param5][] = $output[$param][$param5];
+        }
+
+        $totalAttack = $outPutTable[$param2][0] + $outPutTable[$param2][1] + $outPutTable[$param2][2] + $outPutTable[$param2][3] + $outPutTable[$param2][4];
+        $totalDefense = $outPutTable[$param3][0] + $outPutTable[$param3][1] + $outPutTable[$param3][2] + $outPutTable[$param3][3] + $outPutTable[$param3][4];
+        $totalMagic = $outPutTable[$param4][0] + $outPutTable[$param4][1] + $outPutTable[$param4][2] + $outPutTable[$param4][3] + $outPutTable[$param4][4];
+        $totalDifficulty = $outPutTable[$param5][0] + $outPutTable[$param5][1] + $outPutTable[$param5][2] + $outPutTable[$param5][3] + $outPutTable[$param5][4];
+
+        $outPutTable[$param2][] = ['totalAttack' => $totalAttack];
+        $outPutTable[$param3][] = ['totalDefense' => $totalDefense];
+        $outPutTable[$param4][] = ['totalMagic' => $totalMagic];
+        $outPutTable[$param5][] = ['totalDifficulty' => $totalDifficulty];
+
+
+        return $outPutTable;
     }
 }
