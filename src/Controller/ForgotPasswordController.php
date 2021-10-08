@@ -127,7 +127,7 @@ class ForgotPasswordController extends AbstractController
     {
         $datas = json_decode($request->getContent(), true);
 
-        if ($datas !== null && $datas) {
+        if ($datas !== null && !empty($datas['email'])) {
 
             $email = $datas['email'];
 
@@ -137,7 +137,7 @@ class ForgotPasswordController extends AbstractController
 
                 $newPassword = $datas['password'];
 
-                $verifNewPassword = $datas['verifPassword'];
+                $verifNewPassword = $datas['passwordVerif'];
 
                 if ($newPassword === $verifNewPassword) {
 
@@ -163,16 +163,16 @@ class ForgotPasswordController extends AbstractController
                     $em->persist($user);
                     $em->flush();
 
-                    $email = (new TemplatedEmail())
-                        ->from('support.web@f33ders.co')
-                        ->to($user->getEmail())
-                        ->subject('Mise à jour de vos informations')
-                        ->htmlTemplate('email/informations_update.html.twig')
-                        ->context([
-                            'user' => $user,
-                        ]);
-
-                    $mailer->send($email);
+//                    $email = (new TemplatedEmail())
+//                        ->from('support.web@f33ders.co')
+//                        ->to($user->getEmail())
+//                        ->subject('Mise à jour de vos informations')
+//                        ->htmlTemplate('email/informations_update.html.twig')
+//                        ->context([
+//                            'user' => $user,
+//                        ]);
+//
+//                    $mailer->send($email);
 
                     return new JsonResponse('Le mot de passe a bien été mis à jour !', Response::HTTP_OK);
 
