@@ -31,30 +31,41 @@ class ChampionController extends AbstractController
 
         $allChamp = [];
 
-        foreach ($datas['data'] as $champion) {
+        $champsInDatabase = $dm->getRepository(Champion::class)->findAll();
 
-            $champ = new Champion();
+        if (count($datas['data']) !== count($champsInDatabase)) {
 
-            $champ->setChampionId($champion['id']);
-            $champ->setKey($champion['key']);
-            $champ->setName($champion['name']);
-            $champ->setResume($champion['title']);
-            $champ->setDescription($champion['blurb']);
-            $champ->setAttack($champion['info']['attack']);
-            $champ->setDefense($champion['info']['defense']);
-            $champ->setMagic($champion['info']['magic']);
-            $champ->setDifficulty($champion['info']['difficulty']);
-            $champ->setTypes($champion['tags']);
-            $champ->setImage($champion['image']);
-            $champ->setImageUrl($champion['image']['full']);
+            $dm->createQueryBuilder(Champion::class)->remove()->getQuery()->execute();
 
-            array_push($allChamp, $champion['name']);
+            foreach ($datas['data'] as $champion) {
 
-            $dm->persist($champ);
+                $champ = new Champion();
+
+                $champ->setChampionId($champion['id']);
+                $champ->setKey($champion['key']);
+                $champ->setName($champion['name']);
+                $champ->setResume($champion['title']);
+                $champ->setDescription($champion['blurb']);
+                $champ->setAttack($champion['info']['attack']);
+                $champ->setDefense($champion['info']['defense']);
+                $champ->setMagic($champion['info']['magic']);
+                $champ->setDifficulty($champion['info']['difficulty']);
+                $champ->setTypes($champion['tags']);
+                $champ->setImage($champion['image']);
+                $champ->setImageUrl($champion['image']['full']);
+
+                array_push($allChamp, $champion['name']);
+
+                $dm->persist($champ);
+            }
+
+            $dm->flush();
+
+            return new JsonResponse(count($allChamp) . " Champions has been set into database", Response::HTTP_CREATED);
+
+        } else {
+            return new JsonResponse("Data already up to date", Response::HTTP_BAD_REQUEST);
         }
 
-        $dm->flush();
-
-        return new JsonResponse(count($allChamp)." Champions has been set into database", Response::HTTP_CREATED);
     }
 }
