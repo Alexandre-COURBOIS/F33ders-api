@@ -75,9 +75,17 @@ class ChampionController extends AbstractController
     }
 
     /**
+     * @Route("api/get-all-champion/database", name="get_all_champion_database")
+     */
+    public function getChampionAllChampion(DocumentManager $dm, Request $request): JsonResponse
+    {
+        return JsonResponse::fromJsonString($this->serializerService->SimpleSerializer($dm->getRepository(Champion::class)->findAll(), 'json'), Response::HTTP_OK);
+    }
+
+    /**
      * @Route("api/get-champion/database", name="get_champion_database")
      */
-    public function getChampionByName(DocumentManager $dm, Request $request): JsonResponse
+    public function getChampionByKey(DocumentManager $dm, Request $request): JsonResponse
     {
         $datas = json_decode($request->getContent(), true);
 
