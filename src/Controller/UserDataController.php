@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Document\Champion;
 use App\Document\Player;
 use App\MongoRepository\PlayerRepository;
 use App\Service\FunctionService;
@@ -18,35 +19,56 @@ class UserDataController extends AbstractController
 {
     private RiotApiService $riotApiService;
     private FunctionService $functionService;
+    private SerializerService $serializerService;
 
-    public function __construct(RiotApiService $riotApiService, FunctionService $functionService)
+    public function __construct(RiotApiService $riotApiService, FunctionService $functionService, SerializerService $serializerService)
     {
         $this->riotApiService = $riotApiService;
         $this->functionService = $functionService;
+        $this->serializerService = $serializerService;
     }
 
     /**
      * @Route("api/userdata/insert-history", name="userdata_inserthistory")
      */
-    public function insertHistory(string $username, DocumentManager $dm, Request $request): JsonResponse
+    public function insertHistory(Request $request, DocumentManager $dm): JsonResponse
     {
         $datas = json_decode($request->getContent(), true);
 
         if (!empty($datas) && !empty($datas['username'])) {
 
+            $matchInDb = $dm->getRepository(Player::class)->findOneBy(['username' => $datas['username']]);
+
             $response = $this->riotApiService->getUserApi($datas['username']);
 
-            if (!empty($response)) {
+            if (!empty($response) && $matchInDb === null) {
 
                 $player = new Player();
 
-                $player->setUsername($username);
+                $player->setUsername($datas['username']);
                 $player->setUserHistory([$response]);
                 $dm->persist($player);
                 $dm->flush();
 
-                return new JsonResponse("Datas has been added successfully", Response::HTTP_CREATED);
+                return JsonResponse::fromJsonString($this->serializerService->SimpleSerializer($dm->getRepository(Player::class)->findAll(), 'json'), Response::HTTP_CREATED);
 
+            } elseif (!empty($matchInDb)) {
+                if ($matchInDb->getUserHistory()[0]['matches'][0]['timestamp'] === $response['matches'][0]['timestamp']) {
+
+                    return JsonResponse::fromJsonString($this->serializerService->SimpleSerializer($dm->getRepository(Player::class)->findAll(), 'json'), Response::HTTP_OK);
+
+                } else {
+                    $dm->createQueryBuilder(Player::class)->remove()->field('username')->equals($datas['username'])->getQuery()->execute();
+
+                    $player = new Player();
+
+                    $player->setUsername($datas['username']);
+                    $player->setUserHistory([$response]);
+                    $dm->persist($player);
+                    $dm->flush();
+
+                    return JsonResponse::fromJsonString($this->serializerService->SimpleSerializer($dm->getRepository(Player::class)->findAll(), 'json'), Response::HTTP_CREATED);
+                }
             } else {
                 return new JsonResponse("This username didn't return anything", Response::HTTP_BAD_REQUEST);
             }
@@ -54,14 +76,5 @@ class UserDataController extends AbstractController
             return new JsonResponse("Username unavailable", Response::HTTP_BAD_REQUEST);
         }
     }
-
-    /**
-     * @Route("api/userdata/get-history/", name="get_user_data")
-     */
-    public function getUserHistory(DocumentManager $dm, SerializerService $serializerService, Request $request): JsonResponse
-    {
-        return JsonResponse::fromJsonString($serializerService->SimpleSerializer($dm->getRepository(Player::class)->findOneBy(['username' => json_decode($request->getContent(), true)['username']]), 'json'));
-    }
-
 
 }
