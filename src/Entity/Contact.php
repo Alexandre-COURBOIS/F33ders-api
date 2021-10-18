@@ -56,14 +56,36 @@ class Contact
     /**
      * @ORM\Column(type="string", length=255)
      *
+     * @Assert\NotBlank(
+     *     message="Merci de renseigner votre email.",
+     *     groups={"Contact"}
+     *     )
+     *
+     * @Assert\Email(
+     *     message="Veuillez renseigner un email valide afin que nous puissions vous recontacter suite à votre demande",
+     *     groups={"Contact"}
+     *     )
+     *
      * @Assert\Length(
      *     min="5",
-     *     minMessage="Merci de renseigner une adresse correct",
+     *     minMessage="Merci de renseigner une adresse email correct",
      *     groups={"Contact"}
      *     )
      *
      */
     private $email;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     *
+     * @Assert\Length(
+     *     min="5",
+     *     minMessage="Merci de renseigner un message correct",
+     *     groups={"Contact"}
+     *     )
+     *
+     */
+    private $message;
 
     /**
      * @ORM\Column(type="datetime")
@@ -125,6 +147,18 @@ class Contact
     public function setEmail(string $email): self
     {
         $this->email = $email;
+
+        return $this;
+    }
+
+    public function getMessage(): ?string
+    {
+        return $this->message;
+    }
+
+    public function setMessage(string $message): self
+    {
+        $this->message = $message;
 
         return $this;
     }
