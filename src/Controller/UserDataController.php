@@ -94,6 +94,23 @@ class UserDataController extends AbstractController
         }
     }
 
+    /**
+     * @Route("api/userdata/get-history", name="userdata_gethistory")
+     */
+    public function getUserHistory(Request $request): JsonResponse
+    {
+
+        $datas = json_decode($request->getContent(), true);
+
+        if (!empty($datas) && $datas != null) {
+
+            return JsonResponse::fromJsonString($this->serializerService->SimpleSerializer($this->playerService->matchPlayedWithChampions($datas['username']), 'json'), Response::HTTP_OK);
+        } else {
+            return new JsonResponse("This data does not exist", Response::HTTP_BAD_REQUEST);
+        }
+
+    }
+
 
     function insertMatchHistory($gameId)
     {
