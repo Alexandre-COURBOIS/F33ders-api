@@ -10,7 +10,8 @@ class RiotApiService
     private HttpClientInterface $httpClient;
 
     private string $urlDataDragon = 'http://ddragon.leagueoflegends.com';
-    private string $getAllChampions = '/cdn/9.3.1/data/en_US/champion.json';
+    private string $getAllChampions = '/cdn/11.19.1/data/fr_FR/champion.json';
+    private string $getAllitems = '/cdn/11.19.1/data/fr_FR/item.json';
 
     public function __construct(HttpClientInterface $client)
     {
@@ -86,6 +87,20 @@ class RiotApiService
         $response = $this->httpClient->request(
             'GET',
             $this->urlDataDragon . $this->getAllChampions
+        );
+
+        $content = $response->getContent();
+
+        $content = $response->toArray();
+
+        return $content;
+    }
+
+    public function getItems(): array
+    {
+        $response = $this->httpClient->request(
+            'GET',
+            $this->urlDataDragon . $this->getAllitems
         );
 
         $content = $response->getContent();
