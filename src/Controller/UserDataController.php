@@ -25,7 +25,7 @@ class UserDataController extends AbstractController
     private PlayerService $playerService;
     private DocumentManager $documentManager;
 
-    public function __construct(RiotApiService $riotApiService, FunctionService $functionService, SerializerService $serializerService,
+    public function __construct(RiotApiService  $riotApiService, FunctionService $functionService, SerializerService $serializerService,
                                 DocumentManager $documentManager, PlayerService $playerService)
     {
         $this->riotApiService = $riotApiService;
@@ -48,6 +48,11 @@ class UserDataController extends AbstractController
 
             $response = $this->riotApiService->getUserApi($datas['username']);
 
+            //Format pour obtenir 20 matchs
+            $response = array_slice($response["matches"], 0, 19, true);
+
+            $response = ["matches" => $response];
+
             if (!empty($response) && $matchInDb === null) {
 
                 $player = new Player();
@@ -55,15 +60,14 @@ class UserDataController extends AbstractController
                 $player->setUsername($datas['username']);
                 $player->setUserHistory([$response]);
 
-
-                foreach ($response['matches'] as $match) {
-                    $this->insertMatchHistory($match['gameId']);
+                for ($i = 0; $i < count($response['matches']); $i++) {
+                    $this->insertMatchHistory($response['matches'][$i]['gameId']);
                 }
 
                 $dm->persist($player);
                 $dm->flush();
 
-                return JsonResponse::fromJsonString($this->serializerService->SimpleSerializer($this->playerService->matchPlayedWithChampions($datas['username']), 'json'), Response::HTTP_CREATED);
+                return new JsonResponse("Data has been set succesfully", Response::HTTP_CREATED);
 
             } elseif (!empty($matchInDb)) {
                 if ($matchInDb->getUserHistory()[0]['matches'][0]['timestamp'] === $response['matches'][0]['timestamp']) {
