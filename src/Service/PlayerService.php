@@ -51,40 +51,60 @@ class PlayerService
                         $participant["stats"]["item3"], $participant["stats"]["item4"], $participant["stats"]["item5"], $participant["stats"]["item6"]);
 
                     if ($participant['stats']['win'] == "win") {
-                        $gameInformations['team']['win']['champions'][] =
+                        $gameInformations['team']['win'][] =
                             ["champ" =>
-                                ['key' => $champ->getKey(), 'championId' => $champ->getchampionId(), 'imageUrl' => $champ->getImageUrl()],
-                                "stats" =>
+                                ["informations" =>
                                     [
-                                        "items" =>
-                                            [
-                                                [$item[0][0] ? [$item[0][0]->getName() => $item[0][0]->getItemId(), $item[0][0]->getItemName(), $item[0][0]->getImageUrl()] : null],
-                                                [$item[0][1] ? [$item[0][1]->getName() => $item[0][1]->getItemId(), $item[0][1]->getItemName(), $item[0][1]->getImageUrl()] : null],
-                                                [$item[0][2] ? [$item[0][2]->getName() => $item[0][2]->getItemId(), $item[0][2]->getItemName(), $item[0][2]->getImageUrl()] : null],
-                                                [$item[0][3] ? [$item[0][3]->getName() => $item[0][3]->getItemId(), $item[0][3]->getItemName(), $item[0][3]->getImageUrl()] : null],
-                                                [$item[0][4] ? [$item[0][4]->getName() => $item[0][4]->getItemId(), $item[0][4]->getItemName(), $item[0][4]->getImageUrl()] : null],
-                                                [$item[0][5] ? [$item[0][5]->getName() => $item[0][5]->getItemId(), $item[0][5]->getItemName(), $item[0][5]->getImageUrl()] : null],
-                                                [$item[0][6] ? [$item[0][6]->getName() => $item[0][6]->getItemId(), $item[0][6]->getItemName(), $item[0][6]->getImageUrl()] : null],
-                                            ]
+                                        'key' => $champ->getKey(),
+                                        'championId' => $champ->getchampionId(),
+                                        'imageUrl' => $champ->getImageUrl()
+                                    ],
+                                    "stats" =>
+                                        [
+                                            "attack" => $champ->getAttack(),
+                                            "defense" => $champ->getDefense(),
+                                            "magic" => $champ->getMagic(),
+                                            "difficulty" => $champ->getDifficulty()
+                                        ]
+
+                                ],
+                                "Items" =>
+                                    [
+                                        $item[0][0] ? [$item[0][0]->getName() => $item[0][0]->getItemId(), $item[0][0]->getItemName(), $item[0][0]->getImageUrl()] : null,
+                                        $item[0][1] ? [$item[0][1]->getName() => $item[0][1]->getItemId(), $item[0][1]->getItemName(), $item[0][1]->getImageUrl()] : null,
+                                        $item[0][2] ? [$item[0][2]->getName() => $item[0][2]->getItemId(), $item[0][2]->getItemName(), $item[0][2]->getImageUrl()] : null,
+                                        $item[0][3] ? [$item[0][3]->getName() => $item[0][3]->getItemId(), $item[0][3]->getItemName(), $item[0][3]->getImageUrl()] : null,
+                                        $item[0][4] ? [$item[0][4]->getName() => $item[0][4]->getItemId(), $item[0][4]->getItemName(), $item[0][4]->getImageUrl()] : null,
+                                        $item[0][5] ? [$item[0][5]->getName() => $item[0][5]->getItemId(), $item[0][5]->getItemName(), $item[0][5]->getImageUrl()] : null,
+                                        $item[0][6] ? [$item[0][6]->getName() => $item[0][6]->getItemId(), $item[0][6]->getItemName(), $item[0][6]->getImageUrl()] : null,
                                     ]
                             ];
                     } else {
-                        $gameInformations['team']['lose']['champions'][] =
+                        $gameInformations['team']['lose'][] =
                             ["champ" =>
-                                ['key' => $champ->getKey(), 'championId' => $champ->getchampionId(), 'imageUrl' => $champ->getImageUrl()],
-                                "stats" =>
+                                ["informations" =>
                                     [
-                                        "items" =>
-                                            [
-                                                [$item[0][0] ? [$item[0][0]->getName() => $item[0][0]->getItemId(), $item[0][0]->getItemName(), $item[0][0]->getImageUrl()] : null],
-                                                [$item[0][1] ? [$item[0][1]->getName() => $item[0][1]->getItemId(), $item[0][1]->getItemName(), $item[0][1]->getImageUrl()] : null],
-                                                [$item[0][2] ? [$item[0][2]->getName() => $item[0][2]->getItemId(), $item[0][2]->getItemName(), $item[0][2]->getImageUrl()] : null],
-                                                [$item[0][3] ? [$item[0][3]->getName() => $item[0][3]->getItemId(), $item[0][3]->getItemName(), $item[0][3]->getImageUrl()] : null],
-                                                [$item[0][4] ? [$item[0][4]->getName() => $item[0][4]->getItemId(), $item[0][4]->getItemName(), $item[0][4]->getImageUrl()] : null],
-                                                [$item[0][5] ? [$item[0][5]->getName() => $item[0][5]->getItemId(), $item[0][5]->getItemName(), $item[0][5]->getImageUrl()] : null],
-                                                [$item[0][6] ? [$item[0][6]->getName() => $item[0][6]->getItemId(), $item[0][6]->getItemName(), $item[0][6]->getImageUrl()] : null],
-                                            ]
-                                    ]
+                                        'key' => $champ->getKey(),
+                                        'championId' => $champ->getchampionId(),
+                                        'imageUrl' => $champ->getImageUrl()
+                                    ],
+                                    "stats" =>
+                                        [
+                                            "attack" => $champ->getAttack(),
+                                            "defense" => $champ->getDefense(),
+                                            "magic" => $champ->getMagic(),
+                                            "difficulty" => $champ->getDifficulty()
+                                        ]
+
+                                ],
+                                "Items" =>
+                                        $item[0][0] ? [$item[0][0]->getName() => $item[0][0]->getItemId(), $item[0][0]->getItemName(), $item[0][0]->getImageUrl()] : null,
+                                        $item[0][1] ? [$item[0][1]->getName() => $item[0][1]->getItemId(), $item[0][1]->getItemName(), $item[0][1]->getImageUrl()] : null,
+                                        $item[0][2] ? [$item[0][2]->getName() => $item[0][2]->getItemId(), $item[0][2]->getItemName(), $item[0][2]->getImageUrl()] : null,
+                                        $item[0][3] ? [$item[0][3]->getName() => $item[0][3]->getItemId(), $item[0][3]->getItemName(), $item[0][3]->getImageUrl()] : null,
+                                        $item[0][4] ? [$item[0][4]->getName() => $item[0][4]->getItemId(), $item[0][4]->getItemName(), $item[0][4]->getImageUrl()] : null,
+                                        $item[0][5] ? [$item[0][5]->getName() => $item[0][5]->getItemId(), $item[0][5]->getItemName(), $item[0][5]->getImageUrl()] : null,
+                                        $item[0][6] ? [$item[0][6]->getName() => $item[0][6]->getItemId(), $item[0][6]->getItemName(), $item[0][6]->getImageUrl()] : null,
                             ];
                     }
                 }
@@ -100,7 +120,7 @@ class PlayerService
     {
         $outputTable = [];
 
-        $item  = $this->documentManager->getRepository(Item::class)->findOneBy(['itemId' => $item]);
+        $item = $this->documentManager->getRepository(Item::class)->findOneBy(['itemId' => $item]);
         $item2 = $this->documentManager->getRepository(Item::class)->findOneBy(['itemId' => $item2]);
         $item3 = $this->documentManager->getRepository(Item::class)->findOneBy(['itemId' => $item3]);
         $item4 = $this->documentManager->getRepository(Item::class)->findOneBy(['itemId' => $item4]);

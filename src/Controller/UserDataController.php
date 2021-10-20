@@ -99,7 +99,6 @@ class UserDataController extends AbstractController
      */
     public function getUserHistory(Request $request): JsonResponse
     {
-
         $datas = json_decode($request->getContent(), true);
 
         if (!empty($datas) && $datas != null) {
@@ -108,9 +107,7 @@ class UserDataController extends AbstractController
         } else {
             return new JsonResponse("This data does not exist", Response::HTTP_BAD_REQUEST);
         }
-
     }
-
 
     function insertMatchHistory($gameId)
     {
