@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Repository\UserRepository;
 use App\Service\SerializerService;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,7 +24,7 @@ class UserAccountController extends AbstractController
     /**
      * @Route("/account_activation", name="account_activation")
      */
-    public function activateAccountOnRegister(Request $request, UserRepository $userRepository): Response
+    public function activateAccountOnRegister(Request $request, UserRepository $userRepository, EntityManagerInterface $entityManager): Response
     {
         $data = json_decode($request->getContent(), true);
 
@@ -34,6 +35,9 @@ class UserAccountController extends AbstractController
                 $user->setIsActive(true);
                 $user->setToken(rtrim(strtr(base64_encode(random_bytes(32)), '+/', '-_'), '='));
                 $user->setUpdatedAt(new \DateTime());
+
+                $entityManager->persist($user);
+                $entityManager->flush();
 
                 return new JsonResponse("Votre compte a bien été activé, vous pouvez désormais vous connecter.", Response::HTTP_OK);
 
