@@ -63,7 +63,7 @@ class RiotApiService
     {
         $response = $this->httpClient->request(
             'GET',
-            'http://ddragon.leagueoflegends.com/cdn/9.3.1/data/en_US/champion.json'
+            'http://ddragon.leagueoflegends.com/cdn/11.19.1/data/fr_FR/champion.json'
         );
 
         $content = $response->toArray();
@@ -114,7 +114,7 @@ class RiotApiService
     {
         $response = $this->httpClient->request(
             'GET',
-            'http://ddragon.leagueoflegends.com/cdn/9.3.1/data/en_US/champion.json'
+            'http://ddragon.leagueoflegends.com/cdn/11.19.1/data/fr_FR/champion.json'
         );
 
         $content = $response->toArray();
