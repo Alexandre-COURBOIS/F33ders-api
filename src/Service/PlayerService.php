@@ -8,6 +8,7 @@ use App\Document\Player;
 use App\Document\Match;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class PlayerService
 {
@@ -21,99 +22,114 @@ class PlayerService
         $this->riotApiService = $riotApiService;
     }
 
-    public function matchPlayedWithChampions($playerName): array
+    public function matchPlayedWithChampions($playerName)
     {
+        if (!empty($playerName)) {
 
-        $allMatchPlayer = $this->documentManager->getRepository(Player::class)->findOneBy(['username' => $playerName]);
+            $allMatchPlayer = $this->documentManager->getRepository(Player::class)->findOneBy(['username' => $playerName]);
 
-        $storeMatchPlayed = [];
+            if (!empty($allMatchPlayer)) {
 
-        foreach ($allMatchPlayer->getUserHistory()[0]['matches'] as $match) {
-            $storeMatchPlayed['player']['id'] = $allMatchPlayer->getId();
-            $storeMatchPlayed['player']['username'] = $allMatchPlayer->getUsername();
+                $storeMatchPlayed = [];
 
-            $storeMatchPlayed['match'][] = ["currentUserChampion" => $match['champion'], "game" => ["gameId" => $match['gameId']]];
-        }
+                foreach ($allMatchPlayer->getUserHistory()[0]['matches'] as $match) {
+                    $storeMatchPlayed['player']['id'] = $allMatchPlayer->getId();
+                    $storeMatchPlayed['player']['username'] = $allMatchPlayer->getUsername();
 
-        $gameInformations = [];
+                    $storeMatchPlayed['match'][] = ["currentUserChampion" => $match['champion'], "game" => ["gameId" => $match['gameId']]];
+                }
 
-        for ($i = 0; $i < count($storeMatchPlayed['match']); $i++) {
+                $gameInformations = [];
 
-            $currentGame = $this->documentManager->getRepository(Match::class)->findOneBy(['matchId' => $storeMatchPlayed['match'][$i]['game']['gameId']]);
+                for ($i = 0; $i < count($storeMatchPlayed['match']); $i++) {
 
-            if ($currentGame !== null) {
+                    $currentGame = $this->documentManager->getRepository(Match::class)->findOneBy(['matchId' => $storeMatchPlayed['match'][$i]['game']['gameId']]);
 
-                foreach ($currentGame->getMatch()[11] as $participant) {
+                    if ($currentGame !== null) {
 
-                    $champ = $this->documentManager->getRepository(Champion::class)->findOneBy(['key' => $participant["championId"]]);
+                        if (count($currentGame->getMatch()) > 2) {
 
-                    $item = $this->getItems($participant["stats"]["item0"], $participant["stats"]["item1"], $participant["stats"]["item2"],
-                        $participant["stats"]["item3"], $participant["stats"]["item4"], $participant["stats"]["item5"], $participant["stats"]["item6"]);
+                            foreach ($currentGame->getMatch()[11] as $participant) {
 
-                    if ($participant['stats']['win'] == "win") {
-                        $gameInformations['team']['win'][] =
-                            ["champ" =>
-                                ["informations" =>
-                                    [
-                                        'key' => $champ->getKey(),
-                                        'championId' => $champ->getchampionId(),
-                                        'imageUrl' => $champ->getImageUrl()
-                                    ],
-                                    "stats" =>
-                                        [
-                                            "attack" => $champ->getAttack(),
-                                            "defense" => $champ->getDefense(),
-                                            "magic" => $champ->getMagic(),
-                                            "difficulty" => $champ->getDifficulty()
-                                        ]
+                                $champ = $this->documentManager->getRepository(Champion::class)->findOneBy(['key' => $participant["championId"]]);
 
-                                ],
-                                "Items" =>
-                                    [
-                                        $item[0][0] ? [$item[0][0]->getName() => $item[0][0]->getItemId(), $item[0][0]->getItemName(), $item[0][0]->getImageUrl()] : null,
-                                        $item[0][1] ? [$item[0][1]->getName() => $item[0][1]->getItemId(), $item[0][1]->getItemName(), $item[0][1]->getImageUrl()] : null,
-                                        $item[0][2] ? [$item[0][2]->getName() => $item[0][2]->getItemId(), $item[0][2]->getItemName(), $item[0][2]->getImageUrl()] : null,
-                                        $item[0][3] ? [$item[0][3]->getName() => $item[0][3]->getItemId(), $item[0][3]->getItemName(), $item[0][3]->getImageUrl()] : null,
-                                        $item[0][4] ? [$item[0][4]->getName() => $item[0][4]->getItemId(), $item[0][4]->getItemName(), $item[0][4]->getImageUrl()] : null,
-                                        $item[0][5] ? [$item[0][5]->getName() => $item[0][5]->getItemId(), $item[0][5]->getItemName(), $item[0][5]->getImageUrl()] : null,
-                                        $item[0][6] ? [$item[0][6]->getName() => $item[0][6]->getItemId(), $item[0][6]->getItemName(), $item[0][6]->getImageUrl()] : null,
-                                    ]
-                            ];
+                                $item = $this->getItems($participant["stats"]["item0"], $participant["stats"]["item1"], $participant["stats"]["item2"],
+                                    $participant["stats"]["item3"], $participant["stats"]["item4"], $participant["stats"]["item5"], $participant["stats"]["item6"]);
+
+                                if ($participant['stats']['win'] == "win") {
+                                    $gameInformations['team']['win'][] =
+                                        ["champ" =>
+                                            ["informations" =>
+                                                [
+                                                    'key' => $champ->getKey(),
+                                                    'championId' => $champ->getchampionId(),
+                                                    'imageUrl' => $champ->getImageUrl()
+                                                ],
+                                                "stats" =>
+                                                    [
+                                                        "attack" => $champ->getAttack(),
+                                                        "defense" => $champ->getDefense(),
+                                                        "magic" => $champ->getMagic(),
+                                                        "difficulty" => $champ->getDifficulty()
+                                                    ]
+                                            ],
+                                            "Items" =>
+                                                $item[0][0] ? [$item[0][0]->getName() => $item[0][0]->getItemId(), $item[0][0]->getItemName(), $item[0][0]->getImageUrl()] : null,
+                                            $item[0][1] ? [$item[0][1]->getName() => $item[0][1]->getItemId(), $item[0][1]->getItemName(), $item[0][1]->getImageUrl()] : null,
+                                            $item[0][2] ? [$item[0][2]->getName() => $item[0][2]->getItemId(), $item[0][2]->getItemName(), $item[0][2]->getImageUrl()] : null,
+                                            $item[0][3] ? [$item[0][3]->getName() => $item[0][3]->getItemId(), $item[0][3]->getItemName(), $item[0][3]->getImageUrl()] : null,
+                                            $item[0][4] ? [$item[0][4]->getName() => $item[0][4]->getItemId(), $item[0][4]->getItemName(), $item[0][4]->getImageUrl()] : null,
+                                            $item[0][5] ? [$item[0][5]->getName() => $item[0][5]->getItemId(), $item[0][5]->getItemName(), $item[0][5]->getImageUrl()] : null,
+                                            $item[0][6] ? [$item[0][6]->getName() => $item[0][6]->getItemId(), $item[0][6]->getItemName(), $item[0][6]->getImageUrl()] : null,
+                                        ];
+                                } else {
+                                    $gameInformations['team']['lose'][] =
+                                        ["champ" =>
+                                            ["informations" =>
+                                                [
+                                                    'key' => $champ->getKey(),
+                                                    'championId' => $champ->getchampionId(),
+                                                    'imageUrl' => $champ->getImageUrl()
+                                                ],
+                                                "stats" =>
+                                                    [
+                                                        "attack" => $champ->getAttack(),
+                                                        "defense" => $champ->getDefense(),
+                                                        "magic" => $champ->getMagic(),
+                                                        "difficulty" => $champ->getDifficulty()
+                                                    ]
+                                            ],
+                                            "Items" =>
+                                                $item[0][0] ? [$item[0][0]->getName() => $item[0][0]->getItemId(), $item[0][0]->getItemName(), $item[0][0]->getImageUrl()] : null,
+                                            $item[0][1] ? [$item[0][1]->getName() => $item[0][1]->getItemId(), $item[0][1]->getItemName(), $item[0][1]->getImageUrl()] : null,
+                                            $item[0][2] ? [$item[0][2]->getName() => $item[0][2]->getItemId(), $item[0][2]->getItemName(), $item[0][2]->getImageUrl()] : null,
+                                            $item[0][3] ? [$item[0][3]->getName() => $item[0][3]->getItemId(), $item[0][3]->getItemName(), $item[0][3]->getImageUrl()] : null,
+                                            $item[0][4] ? [$item[0][4]->getName() => $item[0][4]->getItemId(), $item[0][4]->getItemName(), $item[0][4]->getImageUrl()] : null,
+                                            $item[0][5] ? [$item[0][5]->getName() => $item[0][5]->getItemId(), $item[0][5]->getItemName(), $item[0][5]->getImageUrl()] : null,
+                                            $item[0][6] ? [$item[0][6]->getName() => $item[0][6]->getItemId(), $item[0][6]->getItemName(), $item[0][6]->getImageUrl()] : null,
+                                        ];
+                                }
+                            }
+
+                            array_push($storeMatchPlayed['match'][$i]["game"], $gameInformations);
+                            $gameInformations = [];
+
+                        } else {
+                            return new JsonResponse('Aucun match enregistre correspondant a ce profil', Response::HTTP_NOT_FOUND);
+                        }
                     } else {
-                        $gameInformations['team']['lose'][] =
-                            ["champ" =>
-                                ["informations" =>
-                                    [
-                                        'key' => $champ->getKey(),
-                                        'championId' => $champ->getchampionId(),
-                                        'imageUrl' => $champ->getImageUrl()
-                                    ],
-                                    "stats" =>
-                                        [
-                                            "attack" => $champ->getAttack(),
-                                            "defense" => $champ->getDefense(),
-                                            "magic" => $champ->getMagic(),
-                                            "difficulty" => $champ->getDifficulty()
-                                        ]
-
-                                ],
-                                "Items" =>
-                                        $item[0][0] ? [$item[0][0]->getName() => $item[0][0]->getItemId(), $item[0][0]->getItemName(), $item[0][0]->getImageUrl()] : null,
-                                        $item[0][1] ? [$item[0][1]->getName() => $item[0][1]->getItemId(), $item[0][1]->getItemName(), $item[0][1]->getImageUrl()] : null,
-                                        $item[0][2] ? [$item[0][2]->getName() => $item[0][2]->getItemId(), $item[0][2]->getItemName(), $item[0][2]->getImageUrl()] : null,
-                                        $item[0][3] ? [$item[0][3]->getName() => $item[0][3]->getItemId(), $item[0][3]->getItemName(), $item[0][3]->getImageUrl()] : null,
-                                        $item[0][4] ? [$item[0][4]->getName() => $item[0][4]->getItemId(), $item[0][4]->getItemName(), $item[0][4]->getImageUrl()] : null,
-                                        $item[0][5] ? [$item[0][5]->getName() => $item[0][5]->getItemId(), $item[0][5]->getItemName(), $item[0][5]->getImageUrl()] : null,
-                                        $item[0][6] ? [$item[0][6]->getName() => $item[0][6]->getItemId(), $item[0][6]->getItemName(), $item[0][6]->getImageUrl()] : null,
-                            ];
+                        return new JsonResponse('Aucun match enregistre correspondant a ce profil', Response::HTTP_NOT_FOUND);
                     }
                 }
-                array_push($storeMatchPlayed['match'][$i]["game"], $gameInformations);
-                $gameInformations = [];
-            }
-        }
 
-        return $storeMatchPlayed;
+                return $storeMatchPlayed;
+
+            } else {
+                return new JsonResponse("No match available", Response::HTTP_NOT_FOUND);
+            }
+        } else {
+            return new JsonResponse("No user available", Response::HTTP_NOT_FOUND);
+        }
     }
 
     function getItems($item, $item2, $item3, $item4, $item5, $item6, $item7): array

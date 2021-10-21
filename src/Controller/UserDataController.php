@@ -25,7 +25,7 @@ class UserDataController extends AbstractController
     private PlayerService $playerService;
     private DocumentManager $documentManager;
 
-    public function __construct(RiotApiService  $riotApiService, FunctionService $functionService, SerializerService $serializerService,
+    public function __construct(RiotApiService $riotApiService, FunctionService $functionService, SerializerService $serializerService,
                                 DocumentManager $documentManager, PlayerService $playerService)
     {
         $this->riotApiService = $riotApiService;
@@ -48,6 +48,7 @@ class UserDataController extends AbstractController
 
             $response = $this->riotApiService->getUserApi($datas['username']);
 
+            if (count($response) > 2 ) {
             //Format pour obtenir 20 matchs
             $response = array_slice($response["matches"], 0, 19, true);
 
@@ -87,10 +88,13 @@ class UserDataController extends AbstractController
                     return JsonResponse::fromJsonString($this->serializerService->SimpleSerializer($this->playerService->matchPlayedWithChampions($datas['username']), 'json'), Response::HTTP_OK);
                 }
             } else {
-                return new JsonResponse("This username didn't return anything", Response::HTTP_BAD_REQUEST);
+                return new JsonResponse("This username didn't return anything", Response::HTTP_NOT_FOUND);
+            }
+            } else {
+                return new JsonResponse("This username didn't return anything", Response::HTTP_NOT_FOUND);
             }
         } else {
-            return new JsonResponse("Username unavailable", Response::HTTP_BAD_REQUEST);
+            return new JsonResponse("Please send available datas", Response::HTTP_BAD_REQUEST);
         }
     }
 
