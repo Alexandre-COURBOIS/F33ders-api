@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Service\SerializerService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -57,10 +58,27 @@ class UserAccountController extends AbstractController
     {
         $user = $this->getUser();
 
+
         if ($user) {
             return JsonResponse::fromJsonString($this->serializer->SimpleSerializerUser($user, 'json'));
         } else {
             return new JsonResponse("Aucune informations", Response::HTTP_BAD_REQUEST);
         }
     }
+
+    /**
+     * @Route("/api/get_all_user", name="api_get_all_user", methods={"GET"})
+     * @return Response
+     */
+    public function getAllUserInformations(UserRepository $userRepository): Response
+    {
+        $users = $userRepository->findAll();
+
+        if ($users) {
+            return JsonResponse::fromJsonString($this->serializer->SimpleSerializer($users, 'json'));
+        } else {
+            return new JsonResponse("Aucune informations", Response::HTTP_BAD_REQUEST);
+        }
+    }
+
 }
