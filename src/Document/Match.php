@@ -21,6 +21,12 @@ class Match
      */
     private $matchId;
 
+
+    /**
+     * @@MongoDB\Field(type="string")
+     */
+    private $player;
+
     /**
      * @MongoDB\Field(type="collection")
      */
@@ -87,6 +93,22 @@ class Match
     /**
      * @return mixed
      */
+    public function getPlayer()
+    {
+        return $this->player;
+    }
+
+    /**
+     * @param mixed $player
+     */
+    public function setPlayer($player): void
+    {
+        $this->player = $player;
+    }
+
+    /**
+     * @return mixed
+     */
     public function getMatch()
     {
         return $this->match;
@@ -131,6 +153,5 @@ class Match
     {
         $this->updatedAt = $updatedAt;
     }
-
 
 }
