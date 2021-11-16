@@ -81,4 +81,22 @@ class UserAccountController extends AbstractController
         }
     }
 
+    /**
+     * @Route("/api/delete_user/{id}")
+     * @return Response
+     */
+    public function deleteUser($id, UserRepository $userRepository, EntityManagerInterface $em): Response
+    {
+        $user = $userRepository->findOneBy(['id' => $id]);
+
+        if ($user) {
+            $em->remove($user);
+            $em->flush();
+
+            return new JsonResponse(['status' => 'Customer deleted'], Response::HTTP_NO_CONTENT);
+        } else {
+            return new JsonResponse("Aucune informations", Response::HTTP_BAD_REQUEST);
+        }
+    }
+
 }
