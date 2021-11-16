@@ -93,7 +93,7 @@ class UserAccountController extends AbstractController
             $em->remove($user);
             $em->flush();
 
-            return new JsonResponse(['status' => 'Customer deleted'], Response::HTTP_NO_CONTENT);
+            return new JsonResponse(['status' => 'User deleted'], Response::HTTP_NO_CONTENT);
         } else {
             return new JsonResponse("Aucune informations", Response::HTTP_BAD_REQUEST);
         }
