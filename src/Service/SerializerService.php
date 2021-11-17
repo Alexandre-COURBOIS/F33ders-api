@@ -63,4 +63,17 @@ class SerializerService
         return $jsonContent;
     }
 
+    public function SimpleSerializerUserProfil($inputData, $outFormatData): string
+    {
+        $encoders = $this->encoders;
+
+        $normalizers = [new ObjectNormalizer()];
+
+        $serializer= new Serializer($normalizers, $encoders);
+
+        $jsonContent = $serializer->serialize($inputData, $outFormatData, [AbstractNormalizer::IGNORED_ATTRIBUTES => ['password','roles','token','salt','resetToken','resetTokenAt','updatedAt']]);
+
+        return $jsonContent;
+    }
+
 }

@@ -63,4 +63,19 @@ class UserAccountController extends AbstractController
             return new JsonResponse("Aucune informations", Response::HTTP_BAD_REQUEST);
         }
     }
+
+    /**
+     * @Route("/api/get_user_profil", name="api_get_user_profil", methods={"GET"})
+     * @return Response
+     */
+    public function getUserInformationsProfil(): Response
+    {
+        $user = $this->getUser();
+
+        if ($user) {
+            return JsonResponse::fromJsonString($this->serializer->SimpleSerializerUserProfil($user, 'json'));
+        } else {
+            return new JsonResponse("Aucune informations", Response::HTTP_BAD_REQUEST);
+        }
+    }
 }
