@@ -50,6 +50,17 @@ class User implements UserInterface
      *     groups={"Register"}
      *     )
      *
+     * @Assert\NotBlank(
+     *     message="Merci de renseigner votre nom d'invocateur.",
+     *     groups={"UpdateUsername"}
+     *     )
+     *
+     * @Assert\Length(
+     *     min="2",
+     *     minMessage="Merci de renseigner un nom d'invocateur correct",
+     *     groups={"UpdateUsername"}
+     *     )
+     *
      */
     private ?string $username;
 
@@ -87,6 +98,23 @@ class User implements UserInterface
      *     pattern="/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!.:,;^%*?&µù%=&])[A-Za-z\d@$!.:,;^%*?&µù%=&]{8,}$/",
      *     message="Votre mot de passe doit contenir au moins 8 caractères, un caractère spécial, une majuscule ainsi qu'un chiffre.",
      *     groups={"Register"},
+     * )
+     *
+     * @Assert\NotBlank(
+     *     message="Merci de renseigner votre mot de passe.",
+     *     groups={"PasswordUpdate"}
+     *     )
+     *
+     * @Assert\Length(
+     *     min="8",
+     *     minMessage="Veuillez renseigner un mot de passe d'au moins 8 caractères.",
+     *     groups={"PasswordUpdate"}
+     *     )
+     *
+     * @Assert\Regex(
+     *     pattern="/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!.:,;^%*?&µù%=&])[A-Za-z\d@$!.:,;^%*?&µù%=&]{8,}$/",
+     *     message="Votre mot de passe doit contenir au moins caractère spécial, une majuscule ainsi qu'un chiffre.",
+     *     groups={"PasswordUpdate"}
      * )
      *
      */
