@@ -82,43 +82,6 @@ class UserAccountController extends AbstractController
             return new JsonResponse("Aucune informations", Response::HTTP_BAD_REQUEST);
         }
     }
-  
-     /**
-     * @Route("/api/get_all_user", name="api_get_all_user", methods={"GET"})
-     * @param UserRepository $userRepository
-     * @return Response
-     */
-    public function getAllUserInformations(UserRepository $userRepository): Response
-    {
-        $users = $userRepository->findAll();
-
-        if ($users) {
-            return JsonResponse::fromJsonString($this->serializer->SimpleSerializer($users, 'json'));
-        } else {
-            return new JsonResponse("Aucune informations", Response::HTTP_BAD_REQUEST);
-        }
-    }
-
-     /**	
-     * @Route("/api/delete_user/{id}")
-     * @param $id
-     * @param UserRepository $userRepository
-     * @param EntityManagerInterface $em
-     * @return Response
-     */
-    public function deleteUser($id, UserRepository $userRepository, EntityManagerInterface $em): Response
-    {
-        $user = $userRepository->findOneBy(['id' => $id]);
-
-        if ($user) {
-            $em->remove($user);
-            $em->flush();
-
-            return new JsonResponse(['status' => 'User deleted'], Response::HTTP_OK);
-        } else {
-            return new JsonResponse("Aucune informations", Response::HTTP_BAD_REQUEST);
-        }
-    }
 
     /**
      * @Route("/api/update_password", name="update_user_password", methods={"PATCH"})
@@ -128,7 +91,8 @@ class UserAccountController extends AbstractController
      * @param EntityManagerInterface $entityManager
      * @return JsonResponse
      */
-    public function updatePasswordInformations(Request $request, UserPasswordEncoderInterface $passwordEncoder, ValidatorInterface $validator, EntityManagerInterface $entityManager): JsonResponse
+    public
+    function updatePasswordInformations(Request $request, UserPasswordEncoderInterface $passwordEncoder, ValidatorInterface $validator, EntityManagerInterface $entityManager): JsonResponse
     {
 
         //get the data
@@ -187,7 +151,8 @@ class UserAccountController extends AbstractController
      * @param EntityManagerInterface $entityManager
      * @return JsonResponse
      */
-    public function updateUsernameInformations(Request $request, UserPasswordEncoderInterface $passwordEncoder, ValidatorInterface $validator, EntityManagerInterface $entityManager): JsonResponse
+    public
+    function updateUsernameInformations(Request $request, UserPasswordEncoderInterface $passwordEncoder, ValidatorInterface $validator, EntityManagerInterface $entityManager): JsonResponse
     {
 
         //get the data
