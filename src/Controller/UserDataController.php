@@ -25,7 +25,7 @@ class UserDataController extends AbstractController
     private PlayerService $playerService;
     private DocumentManager $documentManager;
 
-    public function __construct(RiotApiService $riotApiService, FunctionService $functionService, SerializerService $serializerService,
+    public function __construct(RiotApiService  $riotApiService, FunctionService $functionService, SerializerService $serializerService,
                                 DocumentManager $documentManager, PlayerService $playerService)
     {
         $this->riotApiService = $riotApiService;
@@ -48,48 +48,48 @@ class UserDataController extends AbstractController
 
             $response = $this->riotApiService->getUserApi($datas['username']);
 
-            if (count($response) > 2 ) {
-            //Format pour obtenir 20 matchs
-            $response = array_slice($response["matches"], 0, 19, true);
+            if (count($response) > 2) {
+                //Format pour obtenir 20 matchs
+                $response = array_slice($response["matches"], 0, 19, true);
 
-            $response = ["matches" => $response];
+                $response = ["matches" => $response];
 
-            if (!empty($response) && $matchInDb === null) {
-
-                $player = new Player();
-
-                $player->setUsername($datas['username']);
-                $player->setUserHistory([$response]);
-
-                for ($i = 0; $i < count($response['matches']); $i++) {
-                    $this->insertMatchHistory($response['matches'][$i]['gameId']);
-                }
-
-                $dm->persist($player);
-                $dm->flush();
-
-                return new JsonResponse("Data has been set succesfully", Response::HTTP_CREATED);
-
-            } elseif (!empty($matchInDb)) {
-                if ($matchInDb->getUserHistory()[0]['matches'][0]['timestamp'] === $response['matches'][0]['timestamp']) {
-
-                    return JsonResponse::fromJsonString($this->serializerService->SimpleSerializer($this->playerService->matchPlayedWithChampions($datas['username']), 'json'), Response::HTTP_OK);
-
-                } else {
-                    $dm->createQueryBuilder(Player::class)->remove()->field('username')->equals($datas['username'])->getQuery()->execute();
+                if (!empty($response) && $matchInDb === null) {
 
                     $player = new Player();
 
                     $player->setUsername($datas['username']);
                     $player->setUserHistory([$response]);
+
+                    for ($i = 0; $i < count($response['matches']); $i++) {
+                        $this->insertMatchHistory($response['matches'][$i]['gameId'], $datas['username']);
+                    }
+
                     $dm->persist($player);
                     $dm->flush();
 
-                    return JsonResponse::fromJsonString($this->serializerService->SimpleSerializer($this->playerService->matchPlayedWithChampions($datas['username']), 'json'), Response::HTTP_OK);
+                    return new JsonResponse("Data has been set succesfully", Response::HTTP_CREATED);
+
+                } elseif (!empty($matchInDb)) {
+                    if ($matchInDb->getUserHistory()[0]['matches'][0]['timestamp'] === $response['matches'][0]['timestamp']) {
+
+                        return JsonResponse::fromJsonString($this->serializerService->SimpleSerializer($this->playerService->matchPlayedWithChampions($datas['username']), 'json'), Response::HTTP_OK);
+
+                    } else {
+                        $dm->createQueryBuilder(Player::class)->remove()->field('username')->equals($datas['username'])->getQuery()->execute();
+
+                        $player = new Player();
+
+                        $player->setUsername($datas['username']);
+                        $player->setUserHistory([$response]);
+                        $dm->persist($player);
+                        $dm->flush();
+
+                        return JsonResponse::fromJsonString($this->serializerService->SimpleSerializer($this->playerService->matchPlayedWithChampions($datas['username']), 'json'), Response::HTTP_OK);
+                    }
+                } else {
+                    return new JsonResponse("This username didn't return anything", Response::HTTP_NOT_FOUND);
                 }
-            } else {
-                return new JsonResponse("This username didn't return anything", Response::HTTP_NOT_FOUND);
-            }
             } else {
                 return new JsonResponse("This username didn't return anything", Response::HTTP_NOT_FOUND);
             }
@@ -113,21 +113,24 @@ class UserDataController extends AbstractController
         }
     }
 
-    function insertMatchHistory($gameId)
+    function insertMatchHistory($gameId, $player)
     {
         if (!empty($gameId)) {
+
             $game = $this->riotApiService->getGameByid($gameId);
 
-            if (!empty($game) && $game != null) {
+            if (!empty($game) && $game != null && count($game) > 2) {
 
                 $match = new Match();
 
                 $match->setMatchId($gameId);
+                $match->setPlayer($player);
                 $match->setMatch($game);
 
                 $this->documentManager->persist($match);
                 $this->documentManager->flush();
-
+            } else {
+                return new JsonResponse("No match available", Response::HTTP_BAD_REQUEST);
             }
         }
     }
