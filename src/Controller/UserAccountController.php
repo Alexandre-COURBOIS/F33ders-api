@@ -68,6 +68,7 @@ class UserAccountController extends AbstractController
 
     /**
      * @Route("/api/get_all_user", name="api_get_all_user", methods={"GET"})
+     * @param UserRepository $userRepository
      * @return Response
      */
     public function getAllUserInformations(UserRepository $userRepository): Response
@@ -83,6 +84,9 @@ class UserAccountController extends AbstractController
 
     /**
      * @Route("/api/delete_user/{id}")
+     * @param $id
+     * @param UserRepository $userRepository
+     * @param EntityManagerInterface $em
      * @return Response
      */
     public function deleteUser($id, UserRepository $userRepository, EntityManagerInterface $em): Response
@@ -93,7 +97,7 @@ class UserAccountController extends AbstractController
             $em->remove($user);
             $em->flush();
 
-            return new JsonResponse(['status' => 'User deleted'], Response::HTTP_NO_CONTENT);
+            return new JsonResponse(['status' => 'User deleted'], Response::HTTP_OK);
         } else {
             return new JsonResponse("Aucune informations", Response::HTTP_BAD_REQUEST);
         }
