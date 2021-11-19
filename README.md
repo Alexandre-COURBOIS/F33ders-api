@@ -8,7 +8,7 @@
 
 ## Technical Requirements
 
-In order to be able to run the application on your workstation, you must install the following dependencies:
+In order to be able to run the application on your workstation, you must clone this repositories :
   * Api Symfony
   * Project Angular [here](https://github.com/Alexandre-COURBOIS/F33ders)
  
@@ -21,6 +21,8 @@ In order to be able to run the application on your workstation, you must install
   1. [Download](https://www.mongodb.com/try/download/community)
 #### Composer
   1. [Download](https://getcomposer.org/)
+#### Postgres SQL
+  1. [Download](https://www.postgresql.org/download/)
 
 
 ## Execution
