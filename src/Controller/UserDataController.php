@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Document\Champion;
+use App\Document\FakePlayer;
 use App\Document\Match;
 use App\Document\Player;
 use App\MongoRepository\PlayerRepository;
@@ -134,5 +135,14 @@ class UserDataController extends AbstractController
             }
         }
     }
+
+    /**
+     * @Route("api/get-all-fakeplayer/database", name="get_all_fakeplayer_database")
+     */
+    public function getChampionAllChampion(DocumentManager $dm, Request $request): JsonResponse
+    {
+        return JsonResponse::fromJsonString($this->serializerService->SimpleSerializerUserMongoDb($dm->getRepository(FakePlayer::class)->findAll(), 'json'), Response::HTTP_OK);
+    }
+
 
 }
