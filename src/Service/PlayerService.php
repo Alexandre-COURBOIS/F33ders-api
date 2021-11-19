@@ -186,8 +186,8 @@ class PlayerService
         return $this->documentManager->getRepository(Player::class)->findAll();
     }
 
-    public function getallFakePlayer(DocumentManager $dm, Request $request): JsonResponse
+    public function getallFakePlayer(): array
     {
-        return JsonResponse::fromJsonString($this->serializerService->SimpleSerializerUserMongoDb($dm->getRepository(FakePlayer::class)->findAll(), 'json'), Response::HTTP_OK);
+        return $this->documentManager->getRepository(FakePlayer::class)->findAll();
     }
 }

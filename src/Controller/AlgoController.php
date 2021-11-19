@@ -41,7 +41,6 @@ class AlgoController extends AbstractController
         $data = json_decode($request->getContent(), true);
         $username = $data['username'];
         $data = $this->process($username);
-        dump($data);
         $arrayLane = [
             "top" => [],
             "jungle" => [],
@@ -49,10 +48,12 @@ class AlgoController extends AbstractController
             'adc' => [],
             'support' => []
         ];
-        $allPLayer = $this->playerService->getAllPlayer();
+//        $allPLayer = $this->playerService->getAllPlayer();
+        $allPlayer = $this->playerService->getallFakePlayer();
+
         if ($data['mainRole'] == 'ADC') {
             $arrayLane['adc'] = $data;
-            foreach ($allPLayer as $player) {
+            foreach ($allPlayer as $player) {
                 $searchPlayer = $this->process($player->getUsername());
                 if ($searchPlayer['mainRole'] == "SUPPORT") {
 
@@ -71,7 +72,7 @@ class AlgoController extends AbstractController
             }
         } elseif ($data['mainRole'] == 'SUPPORT') {
             $arrayLane['support'] = $data;
-            foreach ($allPLayer as $player) {
+            foreach ($allPlayer as $player) {
                 $searchPlayer = $this->process($player->getUsername());
                 if ($searchPlayer['mainRole'] == "ADC") {
                     if ($searchPlayer['agressivity'] == $data['agressivity']) {
@@ -82,7 +83,7 @@ class AlgoController extends AbstractController
         } elseif ($data['mainRole'] == 'JUNGLE') {
             //find mid
             if (empty($arrayLane['mid'])) {
-                foreach ($allPLayer as $player) {
+                foreach ($allPlayer as $player) {
                     $searchPlayer = $this->process($player->getUsername());
                     if ($data['agressivity'] == $searchPlayer['agressivity']) {
                         if ($data['ccer'] == false) {
@@ -100,22 +101,26 @@ class AlgoController extends AbstractController
             $arrayLane['mid'] = $data;
             $arrayLane['mid']['username'] = $username;
             for ($i = 0; $i < count($arrayLane); $i++) {
-                foreach ($allPLayer as $player) {
-                    $searchPlayer = $this->process($player->getUsername());
+                foreach ($allPlayer as $player) {
+//                    $searchPlayer = $this->process($player->getUsername());
+                    $searchPlayer = $player;
                     if (empty($arrayLane['jungle'])) {
-                        if($searchPlayer['mainRole'] == 'JUNGLE') {
+                        if($searchPlayer->getMainRole() == 'JUNGLE') {
                             if ($data['vulnerable'] == true) {
-                                if ($searchPlayer['agressivity'] == true) {
+                                if ($searchPlayer->getAgressivity() == "1") {
                                     if ($data['ccer'] == false) {
-                                        if ($searchPlayer['ccer'] == true) {
+                                        if ($searchPlayer->getCcer() == "1") {
                                             $arrayLane['jungle'] = $searchPlayer;
                                             break;
                                         }
+                                    } else {
+                                        $arrayLane['jungle'] = $searchPlayer;
+                                        break;
                                     }
                                 }
-                            } elseif ($data['agressivity'] == $searchPlayer['agressivity']) {
+                            } elseif (($data['agressivity'] == true && $searchPlayer->getAgressivity() == "1") || ($data['agressivity'] == false && $searchPlayer->getAgressivity() == "")) {
                                 if ($data['ccer'] == false) {
-                                    if ($searchPlayer['ccer'] == true) {
+                                    if ($searchPlayer->getCcer() == "1") {
                                         $arrayLane['jungle'] = $searchPlayer;
                                         break;
                                     }
@@ -126,21 +131,21 @@ class AlgoController extends AbstractController
                             }
                         }
                     } elseif(empty($arrayLane['top'])) {
-                        if($searchPlayer['mainRole'] == 'TOP') {
-                            if ($arrayLane['jungle']['agressivity'] == true && $arrayLane['mid']['agressivity'] == true) {
-                                if ($searchPlayer['teamfighter'] == true) {
+                        if($searchPlayer->getMainRole() == 'TOP') {
+                            if ($arrayLane['jungle']->getAgressivity() == "1" && $arrayLane['mid']['agressivity'] == true) {
+                                if ($searchPlayer->getTeamfighter() == true) {
                                     $arrayLane['top'] = $searchPlayer;
                                     break;
                                 }
-                            } elseif($searchPlayer['moneyPlayer'] == true) {
+                            } elseif($searchPlayer->getMoneyPlayer() == "1") {
                                 $arrayLane['top'] = $searchPlayer;
                                 break;
                             }
                         }
                     } elseif(empty($arrayLane['support'])) {
-                        if($searchPlayer['mainRole'] == 'SUPPORT') {
+                        if($searchPlayer->getMainRole() == 'SUPPORT') {
                             if(!$arrayLane['top']['ccer'] || !$arrayLane['mid']['ccer'] || !$arrayLane['jungle']['ccer']) {
-                                if($searchPlayer['ccer']) {
+                                if($searchPlayer->getCcer() == "1") {
                                     $arrayLane['support'] = $searchPlayer;
                                     break;
                                 }
@@ -150,9 +155,10 @@ class AlgoController extends AbstractController
                             break;
                         }
                     } elseif(empty($arrayLane['adc'])) {
-                        if($searchPlayer['mainRole'] == 'ADC') {
-                            if($searchPlayer['agressivity'] == $arrayLane['support']['agressivity']) {
+                        if($searchPlayer->getMainRole() == 'ADC') {
+                            if(($searchPlayer->getAgressivity() == "1" && $arrayLane['support']->getAgressivity() == "1") || ($searchPlayer->getAgressivity() == "" && $arrayLane['support']['agressivity'] == false)) {
                                 $arrayLane['adc'] = $searchPlayer;
+                                break;
                             }
                         }
                     }
@@ -161,18 +167,13 @@ class AlgoController extends AbstractController
         } elseif ($data['mainRole'] == 'TOP') {
             // fill
         }
-
-        dump($arrayLane);
+        
         return JsonResponse::fromJsonString($this->serializerService->SimpleSerializer($arrayLane, 'json'), Response::HTTP_OK);
     }
 
 
     private function process($username): array
     {
-//        $datas = json_decode($request->getContent(), true);
-
-//        dump($this->playerService->getAllPlayer());
-
         if (!empty($username)) {
             $data = $this->getAvgStats($username);
             $role = $this->getRole($username);
@@ -224,9 +225,6 @@ class AlgoController extends AbstractController
                 $player['moneyPlayer'] = false;
             }
 
-
-//             dump($player);
-
             return $player;
         }
 
@@ -235,9 +233,6 @@ class AlgoController extends AbstractController
     public function getRole($username): array
     {
         $historique = $this->riotApiService->getUserApi($username);
-
-//        dump($historique);
-//        dump($this->playerService->matchPlayedWithChampions('Druxys'));
 
         $tabRoles = [];
         foreach ($historique['matches'] as $match) {
@@ -275,14 +270,11 @@ class AlgoController extends AbstractController
     public function getAvgStats($username): array
     {
         $allMatchPlayer = $this->dm->getRepository(Player::class)->findOneBy(['username' => $username]);
-//        dump($allMatchPlayer);
         $games = [];
         foreach ($allMatchPlayer->getUserHistory()[0]['matches'] as $match) {
-//            dump($match);
             $games[] = $this->dm->getRepository(Match::class)->findOneBy(['matchId' => $match['gameId']]);
         }
-
-//        dump($games[0]);
+        
         $userData = [];
         $i = 0;
         foreach ($games as $match) {
@@ -308,7 +300,6 @@ class AlgoController extends AbstractController
             }
 
         }
-//        dump($userData);
 
         $kills = [];
         $deaths = [];
