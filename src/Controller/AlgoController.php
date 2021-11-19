@@ -261,8 +261,7 @@ class AlgoController extends AbstractController
                 break;
             }
         }
-//        return JsonResponse::fromJsonString($this->serializerService->SimpleSerializer($mainRoles, 'json'), Response::HTTP_OK);
-//        return new JsonResponse($mainRoles, Response::HTTP_OK);
+
         return $mainRoles;
 
     }
@@ -350,7 +349,6 @@ class AlgoController extends AbstractController
         $arr['avgAssists'] = $avgAssists;
 
         return $arr;
-//        return JsonResponse::fromJsonString($this->serializerService->SimpleSerializer($arr, 'json'), Response::HTTP_OK);
     }
 
     private function getAvg($data)
