@@ -177,4 +177,9 @@ class PlayerService
 
         return new JsonResponse("Fake Players Added Succesfully");
     }
+  
+  function getAllPlayer(): array
+        {
+            return $this->documentManager->getRepository(Player::class)->findAll();
+        }
 }
