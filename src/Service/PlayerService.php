@@ -161,13 +161,13 @@ class PlayerService
 
             $fakePlayer = new FakePlayer();
 
-            $fakePlayer->setMainRole($roles[rand(0,4)]);
-            $fakePlayer->setSecondaryRole($roles[rand(0,4)]);
-            $fakePlayer->setAgressivity($bool[rand(0,1)]);
-            $fakePlayer->setVulnerable($bool[rand(0,1)]);
-            $fakePlayer->setTeamfighter($bool[rand(0,1)]);
-            $fakePlayer->setCcer($bool[rand(0,1)]);
-            $fakePlayer->setMoneyPlayer($bool[rand(0,1)]);
+            $fakePlayer->setMainRole($roles[rand(0, 4)]);
+            $fakePlayer->setSecondaryRole($roles[rand(0, 4)]);
+            $fakePlayer->setAgressivity($bool[rand(0, 1)]);
+            $fakePlayer->setVulnerable($bool[rand(0, 1)]);
+            $fakePlayer->setTeamfighter($bool[rand(0, 1)]);
+            $fakePlayer->setCcer($bool[rand(0, 1)]);
+            $fakePlayer->setMoneyPlayer($bool[rand(0, 1)]);
             $fakePlayer->setUsername($faker->userName);
 
 
@@ -177,9 +177,9 @@ class PlayerService
 
         return new JsonResponse("Fake Players Added Succesfully");
     }
-  
-  function getAllPlayer(): array
-        {
-            return $this->documentManager->getRepository(Player::class)->findAll();
-        }
+
+    function getAllPlayer(): array
+    {
+        return $this->documentManager->getRepository(Player::class)->findAll();
+    }
 }
