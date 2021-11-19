@@ -44,4 +44,28 @@ class FunctionService
         // Si tout s'execute correctement je renvoi true et tout fonctionne;
         return true;
     }
+
+    public function randomPassword(): string
+    {
+        $randNumber = rand(0,999);
+
+        $majCaracter = "ABCDEFGHIJKLMOPQRSTUVWXYZ";
+        $shuffleMajCaracter = str_shuffle($majCaracter);
+        $randNumberToPickCaracter = rand(3,4);
+        $returnedChar = substr($shuffleMajCaracter, $randNumberToPickCaracter,$randNumberToPickCaracter);
+
+        $caracter = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz";
+        $shuffleCaracter = str_shuffle($caracter);
+        $randNumberPick = rand(6,7);
+        $returnedCaracter = substr($shuffleCaracter, $randNumberPick, $randNumberPick);
+
+        $specialCaracter = "@$!%*?&";
+        $shuffleSpecialCaracter = str_shuffle($specialCaracter);
+        $randToPick = rand(1,2);
+        $returnedSpecial = substr($shuffleSpecialCaracter, $randToPick, $randToPick);
+
+        $result = str_shuffle($randNumber.$returnedChar.$returnedCaracter.$returnedSpecial);
+
+        return $result;
+    }
 }

@@ -4,6 +4,7 @@ namespace App\Command;
 
 use App\Service\ChampionService;
 use App\Service\ItemService;
+use App\Service\PlayerService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -22,12 +23,14 @@ class UpdateChampAndItem extends Command
     private ItemService $itemService;
     private ChampionService $championService;
     private MailerInterface $mailerInterface;
+    private PlayerService $playerService;
 
-    public function __construct(ItemService $itemService, ChampionService $championService, MailerInterface $mailer)
+    public function __construct(ItemService $itemService, ChampionService $championService, MailerInterface $mailer, PlayerService $playerService)
     {
         $this->itemService = $itemService;
         $this->championService = $championService;
         $this->mailerInterface = $mailer;
+        $this->playerService = $playerService;
 
         parent::__construct();
     }
@@ -45,6 +48,7 @@ class UpdateChampAndItem extends Command
 
             $champResp  = $this->championService->setChampInDatabase();
             $itemResp   = $this->itemService->setItemToDatabase();
+            $playerFakeResp = $this->playerService->insertFakePlayerData();
 
             $output->writeln([
                 '============',
@@ -55,13 +59,17 @@ class UpdateChampAndItem extends Command
                 'ItemUpdate',
                 '============',
                 '<fg=green>' . $itemResp . '</>',
+                '============',
+                'FakePlayerUpdate',
+                '============',
+                '<fg=green>' . $playerFakeResp . '</>',
             ]);
 
             $email = (new Email())
                 ->from('updateWithCron@F33ders.com')
                 ->to("f33ders@gmail.com")
                 ->subject("La tâche cron a bien été executée")
-                ->text("la tâche cron c'est bien executée celle-ci a renvoyé le message suivant : Champion : <br>" . $champResp . "<br> Item : ". $itemResp);
+                ->text("la tâche cron c'est bien executée celle-ci a renvoyé le message suivant : Champion : <br>" . $champResp . "<br> Item : ". $itemResp . "<br> FakePlayer : ". $playerFakeResp);
 
             $this->mailerInterface->send($email);
 

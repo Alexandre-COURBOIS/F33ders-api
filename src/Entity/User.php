@@ -50,8 +50,31 @@ class User implements UserInterface
      *     groups={"Register"}
      *     )
      *
+     * @Assert\NotBlank(
+     *     message="Merci de renseigner votre nom d'invocateur.",
+     *     groups={"UpdateUsername"}
+     *     )
+     *
+     * @Assert\Length(
+     *     min="2",
+     *     minMessage="Merci de renseigner un nom d'invocateur correct",
+     *     groups={"UpdateUsername"}
+     *     )
+     *
+     * @Assert\NotBlank(
+     *     message="Merci de renseigner votre nom d'invocateur.",
+     *     groups={"InformationUpdateAdmin"}
+     *     )
+     *
+     * @Assert\Length(
+     *     min="2",
+     *     minMessage="Merci de renseigner un nom d'invocateur correct",
+     *     groups={"InformationUpdateAdmin"}
+     *     )
+     *
      */
     private ?string $username;
+
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -64,6 +87,16 @@ class User implements UserInterface
      * @Assert\Email(
      *     message="Veuillez renseigner un mail valide.",
      *     groups={"Register"}
+     *     )
+     *
+     * @Assert\NotBlank(
+     *     message="Merci de renseigner votre email.",
+     *     groups={"InformationUpdateAdmin"}
+     *     )
+     *
+     * @Assert\Email(
+     *     message="Veuillez renseigner un mail valide.",
+     *     groups={"InformationUpdateAdmin"}
      *     )
      *
      */
@@ -87,6 +120,40 @@ class User implements UserInterface
      *     pattern="/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!.:,;^%*?&µù%=&])[A-Za-z\d@$!.:,;^%*?&µù%=&]{8,}$/",
      *     message="Votre mot de passe doit contenir au moins 8 caractères, un caractère spécial, une majuscule ainsi qu'un chiffre.",
      *     groups={"Register"},
+     * )
+     *
+     * @Assert\NotBlank(
+     *     message="Merci de renseigner votre mot de passe.",
+     *     groups={"PasswordUpdate"}
+     *     )
+     *
+     * @Assert\Length(
+     *     min="8",
+     *     minMessage="Veuillez renseigner un mot de passe d'au moins 8 caractères.",
+     *     groups={"PasswordUpdate"}
+     *     )
+     *
+     * @Assert\Regex(
+     *     pattern="/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!.:,;^%*?&µù%=&])[A-Za-z\d@$!.:,;^%*?&µù%=&]{8,}$/",
+     *     message="Votre mot de passe doit contenir au moins caractère spécial, une majuscule ainsi qu'un chiffre.",
+     *     groups={"PasswordUpdate"}
+     * )
+     *
+     * @Assert\NotBlank(
+     *     message="Merci de renseigner votre mot de passe.",
+     *     groups={"PasswordUpdateByAdmin"}
+     *     )
+     *
+     * @Assert\Length(
+     *     min="8",
+     *     minMessage="Veuillez renseigner un mot de passe d'au moins 8 caractères.",
+     *     groups={"PasswordUpdateByAdmin"}
+     *     )
+     *
+     * @Assert\Regex(
+     *     pattern="/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!.:,;^%*?&µù%=&])[A-Za-z\d@$!.:,;^%*?&µù%=&]{8,}$/",
+     *     message="Votre mot de passe doit contenir au moins caractère spécial, une majuscule ainsi qu'un chiffre.",
+     *     groups={"PasswordUpdateByAdmin"}
      * )
      *
      */
@@ -118,6 +185,11 @@ class User implements UserInterface
     private $isActive;
 
     /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isBanned;
+
+    /**
      * @ORM\Column(type="datetime")
      */
     private $createdAt;
@@ -147,6 +219,10 @@ class User implements UserInterface
 
         if (empty($this->getIsActive())) {
             $this->setIsActive(false);
+        }
+
+        if (empty($this->getIsBanned())) {
+            $this->setIsBanned(false);
         }
     }
 
@@ -237,6 +313,18 @@ class User implements UserInterface
     public function setIsActive(bool $isActive): self
     {
         $this->isActive = $isActive;
+
+        return $this;
+    }
+
+    public function getIsBanned(): ?bool
+    {
+        return $this->isBanned;
+    }
+
+    public function setIsBanned(bool $isBanned): self
+    {
+        $this->isBanned = $isBanned;
 
         return $this;
     }
