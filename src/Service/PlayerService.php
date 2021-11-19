@@ -123,4 +123,9 @@ class PlayerService
 
             return $outputTable;
         }
+        
+        function getAllPlayer(): array
+        {
+            return $this->documentManager->getRepository(Player::class)->findAll();
+        }
     }
