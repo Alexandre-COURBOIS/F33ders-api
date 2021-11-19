@@ -156,7 +156,7 @@ class AlgoController extends AbstractController
                         }
                     } elseif(empty($arrayLane['adc'])) {
                         if($searchPlayer->getMainRole() == 'ADC') {
-                            if(($searchPlayer->getAgressivity() == "1" && $arrayLane['support']->getAgressivity() == "1") || ($searchPlayer->getAgressivity() == "" && $arrayLane['support']['agressivity'] == false)) {
+                            if(($searchPlayer->getAgressivity() == "1" && $arrayLane['support']->getAgressivity() == "1") || ($searchPlayer->getAgressivity() == "" && $arrayLane['support']->getAgressivity() == "")) {
                                 $arrayLane['adc'] = $searchPlayer;
                                 break;
                             }
