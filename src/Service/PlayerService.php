@@ -3,10 +3,12 @@
 namespace App\Service;
 
 use App\Document\Champion;
+use App\Document\FakePlayer;
 use App\Document\Item;
 use App\Document\Player;
 use App\Document\Match;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Faker\Factory;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -135,5 +137,44 @@ class PlayerService
         array_push($outputTable, $it);
 
         return $outputTable;
+    }
+
+    public function insertFakePlayerData(): JsonResponse
+    {
+
+        $faker = Factory::create();
+
+        $bool = [
+            0 => false,
+            1 => true,
+        ];
+
+        $roles = [
+            0 => 'TOP',
+            1 => 'JUNGLE',
+            2 => 'MID',
+            3 => 'ADC',
+            4 => 'SUPPORT'
+        ];
+
+        for ($i = 0; $i < 100; $i++) {
+
+            $fakePlayer = new FakePlayer();
+
+            $fakePlayer->setMainRole($roles[rand(0,4)]);
+            $fakePlayer->setSecondaryRole($roles[rand(0,4)]);
+            $fakePlayer->setAgressivity($bool[rand(0,1)]);
+            $fakePlayer->setVulnerable($bool[rand(0,1)]);
+            $fakePlayer->setTeamfighter($bool[rand(0,1)]);
+            $fakePlayer->setCcer($bool[rand(0,1)]);
+            $fakePlayer->setMoneyPlayer($bool[rand(0,1)]);
+            $fakePlayer->setUsername($faker->userName);
+
+
+            $this->documentManager->persist($fakePlayer);
+            $this->documentManager->flush();
+        }
+
+        return new JsonResponse("Fake Players Added Succesfully");
     }
 }

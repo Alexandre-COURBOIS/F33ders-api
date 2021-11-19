@@ -105,6 +105,9 @@
     "friendsofphp/proxy-manager-lts": {
         "version": "v1.0.5"
     },
+    "fzaninotto/faker": {
+        "version": "v1.9.2"
+    },
     "gesdinet/jwt-refresh-token-bundle": {
         "version": "v0.12.0"
     },
