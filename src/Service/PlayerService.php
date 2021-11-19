@@ -10,6 +10,7 @@ use App\Document\Match;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Faker\Factory;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class PlayerService
@@ -17,11 +18,13 @@ class PlayerService
 
     private DocumentManager $documentManager;
     private RiotApiService $riotApiService;
+    private SerializerService $serializerService;
 
-    public function __construct(DocumentManager $documentManager, RiotApiService $riotApiService)
+    public function __construct(DocumentManager $documentManager, RiotApiService $riotApiService, SerializerService $serializerService)
     {
         $this->documentManager = $documentManager;
         $this->riotApiService = $riotApiService;
+        $this->serializerService = $serializerService;
     }
 
     public function matchPlayedWithChampions($playerName)
@@ -181,5 +184,10 @@ class PlayerService
     function getAllPlayer(): array
     {
         return $this->documentManager->getRepository(Player::class)->findAll();
+    }
+
+    public function getallFakePlayer(DocumentManager $dm, Request $request): JsonResponse
+    {
+        return JsonResponse::fromJsonString($this->serializerService->SimpleSerializerUserMongoDb($dm->getRepository(FakePlayer::class)->findAll(), 'json'), Response::HTTP_OK);
     }
 }
